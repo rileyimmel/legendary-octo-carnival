@@ -1,0 +1,1187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="robots" content="noindex, nofollow">
+<title>Europe Trip — June 2026</title>
+<style>
+  :root {
+    --primary: #4A5D52;
+    --primary-light: #6B8077;
+    --primary-dark: #364438;
+    --accent: #C17F59;
+    --accent-light: #DAA887;
+    --bg: #F7F6F3;
+    --card: #ffffff;
+    --text: #333333;
+    --text-light: #7a7a7a;
+    --border: #E5E3DE;
+    --hotel-bg: #F0EDE8;
+    --hotel-border: #C8C3BA;
+    --shadow: 0 2px 8px rgba(0,0,0,0.06);
+    --radius: 12px;
+    --done-opacity: 0.35;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    padding-bottom: env(safe-area-inset-bottom, 20px);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Ribbon ── */
+  .ribbon {
+    position: sticky; top: 0; z-index: 100;
+    background: var(--primary-dark);
+    padding: env(safe-area-inset-top, 8px) 12px 0;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.2);
+  }
+  .ribbon-title {
+    color: #fff; font-size: 15px; font-weight: 600;
+    text-align: center; padding: 8px 0 4px; letter-spacing: 0.3px;
+  }
+  .ribbon-title small {
+    display: block; font-size: 11px; font-weight: 400;
+    color: rgba(255,255,255,0.7); margin-top: 1px;
+  }
+  .view-tabs {
+    display: flex; gap: 6px; overflow-x: auto;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 6px 0 8px;
+  }
+  .view-tabs::-webkit-scrollbar { display: none; }
+  .view-tab {
+    flex-shrink: 0; background: rgba(255,255,255,0.12);
+    color: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 20px; padding: 7px 14px; font-size: 13px; font-weight: 500;
+    cursor: pointer; transition: all 0.2s; -webkit-tap-highlight-color: transparent;
+    white-space: nowrap;
+  }
+  .view-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+
+  /* ── Toolbar row ── */
+  .toolbar {
+    display: flex; gap: 8px; padding: 0 0 10px; align-items: center;
+  }
+  .tool-btn {
+    display: flex; align-items: center; gap: 5px;
+    background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8);
+    border: 1px solid rgba(255,255,255,0.15); border-radius: 8px;
+    padding: 6px 12px; font-size: 12px; font-weight: 500;
+    cursor: pointer; -webkit-tap-highlight-color: transparent; white-space: nowrap;
+  }
+  .tool-btn.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .tool-btn svg { width: 14px; height: 14px; flex-shrink: 0; }
+  .toolbar-spacer { flex: 1; }
+  .tool-btn.danger { color: #d4887a; border-color: rgba(212,136,122,0.3); }
+
+  /* ── Day selector ── */
+  .day-selector {
+    display: none; background: var(--primary); padding: 0 12px 10px;
+    position: sticky; top: 0; z-index: 99;
+  }
+  .day-selector.visible { display: block; }
+  .day-pills {
+    display: flex; gap: 6px; overflow-x: auto;
+    -webkit-overflow-scrolling: touch; scrollbar-width: none; padding: 4px 0;
+  }
+  .day-pills::-webkit-scrollbar { display: none; }
+  .day-pill {
+    flex-shrink: 0; background: rgba(255,255,255,0.1);
+    color: rgba(255,255,255,0.8); border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 16px; padding: 5px 12px; font-size: 12px; font-weight: 500;
+    cursor: pointer; -webkit-tap-highlight-color: transparent; white-space: nowrap;
+  }
+  .day-pill.active { background: #fff; color: var(--primary-dark); border-color: #fff; font-weight: 600; }
+  .day-detail-toggle { display: flex; gap: 8px; padding: 6px 0 0; }
+  .day-detail-btn {
+    flex: 1; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.8);
+    border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; padding: 6px;
+    font-size: 12px; font-weight: 500; cursor: pointer; text-align: center;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .day-detail-btn.active { background: rgba(255,255,255,0.25); color: #fff; border-color: rgba(255,255,255,0.4); font-weight: 600; }
+
+  /* ── Content ── */
+  .content { padding: 16px 12px; max-width: 600px; margin: 0 auto; }
+
+  /* ── Hotel cards ── */
+  .hotel-card {
+    background: var(--card); border: 1px solid var(--hotel-border);
+    border-left: 4px solid var(--primary); border-radius: var(--radius);
+    padding: 16px; margin-bottom: 16px; box-shadow: var(--shadow);
+  }
+  .hotel-card h3 { font-size: 17px; font-weight: 700; color: var(--primary-dark); margin-bottom: 2px; }
+  .hotel-card .hotel-city { font-size: 13px; color: var(--text-light); font-weight: 500; margin-bottom: 10px; }
+  .hotel-detail { display: flex; padding: 4px 0; font-size: 14px; border-bottom: 1px solid var(--border); }
+  .hotel-detail:last-child { border-bottom: none; }
+  .hotel-detail .label {
+    flex-shrink: 0; width: 100px; font-weight: 600; color: var(--text-light);
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px; padding-top: 1px;
+  }
+  .hotel-detail .value { flex: 1; font-size: 14px; }
+  .hotel-actions { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .action-btn {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--primary); color: #fff; text-decoration: none;
+    border-radius: 8px; padding: 8px 12px; font-size: 13px; font-weight: 500;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .action-btn:active { background: var(--primary-dark); }
+  .action-btn.secondary { background: var(--hotel-bg); color: var(--primary-dark); border: 1px solid var(--hotel-border); }
+  .action-btn.secondary:active { background: var(--border); }
+  .action-btn svg { width: 16px; height: 16px; flex-shrink: 0; }
+
+  /* ── Day sections ── */
+  .day-section { margin-bottom: 24px; }
+  .day-header {
+    background: var(--primary-dark); color: #fff; padding: 12px 16px;
+    border-radius: var(--radius) var(--radius) 0 0; font-size: 16px; font-weight: 700;
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .day-header .day-date { font-size: 12px; font-weight: 400; opacity: 0.8; }
+  .day-progress {
+    font-size: 11px; font-weight: 500; background: rgba(255,255,255,0.2);
+    border-radius: 10px; padding: 2px 8px; margin-left: 8px;
+  }
+  .day-progress.all-done { background: #5a8a6a; }
+  .day-body {
+    background: var(--card); border: 1px solid var(--border); border-top: none;
+    border-radius: 0 0 var(--radius) var(--radius); padding: 16px; box-shadow: var(--shadow);
+  }
+  .day-body h4 { font-size: 15px; font-weight: 700; color: var(--primary); margin: 16px 0 6px; }
+  .day-body h4:first-child { margin-top: 0; }
+  .day-body p { font-size: 14px; margin-bottom: 8px; line-height: 1.6; }
+  .day-body a { color: var(--primary); text-decoration: underline; text-underline-offset: 2px; }
+  .day-body ul { padding-left: 18px; margin-bottom: 8px; }
+  .day-body li { font-size: 14px; margin-bottom: 6px; line-height: 1.5; }
+
+  .place-link {
+    display: inline-flex; align-items: center; gap: 3px;
+    color: var(--primary); text-decoration: none; font-weight: 500;
+  }
+  .place-link svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+  .tip {
+    background: #fef9f0; border: 1px solid var(--accent-light); border-radius: 8px;
+    padding: 10px 12px; font-size: 13px; margin: 8px 0; color: #7a5a1f;
+  }
+
+  .quick-ref { width: 100%; border-collapse: collapse; font-size: 13px; margin: 8px 0; }
+  .quick-ref th {
+    background: var(--primary-dark); color: #fff; padding: 8px 10px; text-align: left;
+    font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .quick-ref td { padding: 8px 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  .quick-ref tr:nth-child(even) td { background: var(--hotel-bg); }
+
+  .essentials-list { list-style: none; padding: 0; }
+  .essentials-list > li { padding: 10px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .essentials-list > li:last-child { border-bottom: none; }
+  .essentials-list .time-label {
+    font-weight: 700; color: var(--primary); font-size: 12px;
+    text-transform: uppercase; display: block; margin-bottom: 2px;
+  }
+
+  .hidden { display: none !important; }
+  .section-title {
+    font-size: 20px; font-weight: 800; color: var(--primary-dark);
+    margin-bottom: 16px; padding-bottom: 8px; border-bottom: 2px solid var(--accent);
+  }
+
+  /* ═══════════════════════════════════ */
+  /* V2: CROSS-OFF                       */
+  /* ═══════════════════════════════════ */
+  .crossable {
+    position: relative;
+    padding-left: 30px !important;
+    transition: opacity 0.25s;
+    cursor: pointer;
+    min-height: 24px;
+  }
+  .cross-check {
+    position: absolute; left: 0; top: 4px;
+    width: 22px; height: 22px; border-radius: 50%;
+    border: 2px solid var(--border); background: var(--card);
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all 0.2s;
+    -webkit-tap-highlight-color: transparent;
+    flex-shrink: 0; z-index: 1;
+  }
+  .cross-check::after {
+    content: ''; display: none;
+    width: 10px; height: 6px;
+    border-left: 2px solid #fff; border-bottom: 2px solid #fff;
+    transform: rotate(-45deg); margin-top: -2px;
+  }
+  .crossable.done > .cross-check {
+    background: #5a8a6a; border-color: #5a8a6a;
+  }
+  .crossable.done > .cross-check::after { display: block; }
+  .crossable.done {
+    opacity: var(--done-opacity);
+    text-decoration: line-through;
+    text-decoration-color: var(--text-light);
+  }
+  /* Essentials list items need special handling since they have time-labels */
+  .essentials-list > li.crossable { padding-left: 30px !important; }
+  .essentials-list > li.crossable > .cross-check { top: 12px; }
+
+  /* h4 crossable styling */
+  h4.crossable { padding-left: 30px !important; }
+  h4.crossable > .cross-check {
+    top: 0px;
+    border-color: var(--primary-light);
+  }
+  h4.crossable.done { color: var(--text-light); }
+  /* When h4 is done, dim its content below */
+  h4.crossable.done ~ p,
+  h4.crossable.done ~ ul,
+  h4.crossable.done ~ .tip {
+    opacity: var(--done-opacity);
+    text-decoration: line-through;
+    text-decoration-color: var(--text-light);
+  }
+  /* Stop dimming at the next non-done h4 */
+  h4.crossable:not(.done) ~ p,
+  h4.crossable:not(.done) ~ ul,
+  h4.crossable:not(.done) ~ .tip {
+    opacity: 1;
+    text-decoration: none;
+  }
+
+  /* ═══════════════════════════════════ */
+  /* V2: EDIT MODE                       */
+  /* ═══════════════════════════════════ */
+  body.edit-mode .day-body p,
+  body.edit-mode .day-body li,
+  body.edit-mode .day-body .tip,
+  body.edit-mode .essentials-list > li {
+    outline: 1px dashed var(--primary-light);
+    outline-offset: 2px;
+    border-radius: 4px;
+    cursor: text;
+  }
+  body.edit-mode .day-body p:focus,
+  body.edit-mode .day-body li:focus,
+  body.edit-mode .day-body .tip:focus,
+  body.edit-mode .essentials-list > li:focus {
+    outline: 2px solid var(--primary);
+    background: var(--hotel-bg);
+  }
+
+  /* ═══════════════════════════════════ */
+  /* V2: NOTES                           */
+  /* ═══════════════════════════════════ */
+  .day-notes {
+    margin-top: 14px; padding-top: 12px; border-top: 1px dashed var(--border);
+  }
+  .notes-header {
+    display: flex; align-items: center; gap: 6px; cursor: pointer;
+    font-size: 13px; font-weight: 600; color: var(--text-light);
+    -webkit-tap-highlight-color: transparent; padding: 4px 0;
+  }
+  .notes-header svg { width: 14px; height: 14px; transition: transform 0.2s; }
+  .notes-header.open svg { transform: rotate(90deg); }
+  .notes-input {
+    display: none; width: 100%; min-height: 60px; margin-top: 6px;
+    border: 1px solid var(--border); border-radius: 8px; padding: 10px;
+    font-family: inherit; font-size: 14px; line-height: 1.5;
+    background: var(--bg); color: var(--text); resize: vertical;
+  }
+  .notes-header.open + .notes-input { display: block; }
+  .notes-input:focus { outline: 2px solid var(--primary); border-color: transparent; }
+  .notes-badge {
+    font-size: 10px; background: var(--accent); color: #fff;
+    border-radius: 8px; padding: 1px 6px; font-weight: 600;
+  }
+
+  /* ═══════════════════════════════════ */
+  /* V2: TOAST                           */
+  /* ═══════════════════════════════════ */
+  .toast {
+    position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+    background: var(--primary-dark); color: #fff; padding: 10px 20px;
+    border-radius: 20px; font-size: 13px; font-weight: 500;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25); z-index: 999;
+    opacity: 0; transition: opacity 0.3s; pointer-events: none;
+  }
+  .toast.show { opacity: 1; }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1c1f1d; --card: #282b29; --text: #e2e0dc; --text-light: #9a9890;
+      --border: #3a3d3a; --hotel-bg: #2a2e2b; --hotel-border: #4a5048;
+      --shadow: 0 2px 8px rgba(0,0,0,0.35);
+      --primary: #6B8077; --primary-light: #8aa396; --primary-dark: #4A5D52;
+      --accent: #D49570; --accent-light: #e0b090;
+    }
+    .tip { background: #2e2a24; border-color: #5a4d3e; color: #d4b88a; }
+    .notes-input { background: #232523; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══════ RIBBON ══════ -->
+<div class="ribbon" id="ribbon">
+  <div class="ribbon-title">
+    Copenhagen &middot; Amsterdam &middot; Utrecht &middot; The Hague
+    <small>June 12 &ndash; 21, 2026</small>
+  </div>
+  <div class="view-tabs" id="viewTabs">
+    <button class="view-tab active" data-view="full">Full Itinerary</button>
+    <button class="view-tab" data-view="essentials">Essentials</button>
+    <button class="view-tab" data-view="hotels">Hotels Only</button>
+    <button class="view-tab" data-view="byday">By Day</button>
+  </div>
+  <div class="toolbar">
+    <button class="tool-btn" id="editToggle">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Edit Mode
+    </button>
+    <div class="toolbar-spacer"></div>
+    <button class="tool-btn danger" id="resetBtn">Reset All</button>
+  </div>
+</div>
+
+<!-- ══════ DAY SELECTOR ══════ -->
+<div class="day-selector" id="daySelector">
+  <div class="day-pills" id="dayPills">
+    <button class="day-pill active" data-day="1">Day 1</button>
+    <button class="day-pill" data-day="2">Day 2</button>
+    <button class="day-pill" data-day="3">Day 3</button>
+    <button class="day-pill" data-day="4">Day 4</button>
+    <button class="day-pill" data-day="5">Day 5</button>
+    <button class="day-pill" data-day="6">Day 6</button>
+    <button class="day-pill" data-day="7">Day 7</button>
+    <button class="day-pill" data-day="8">Day 8</button>
+    <button class="day-pill" data-day="9">Day 9</button>
+    <button class="day-pill" data-day="10">Day 10</button>
+  </div>
+  <div class="day-detail-toggle">
+    <button class="day-detail-btn active" data-detail="full">Full Detail</button>
+    <button class="day-detail-btn" data-detail="essentials">Essentials</button>
+  </div>
+</div>
+
+<!-- ══════ CONTENT ══════ -->
+<div class="content" id="content">
+
+<!-- ═══════════════════════════ -->
+<!-- VIEW: FULL ITINERARY       -->
+<!-- ═══════════════════════════ -->
+<div id="view-full">
+
+  <div class="section-title">Hotel Quick Reference</div>
+  <div style="overflow-x:auto;margin-bottom:24px;">
+    <table class="quick-ref">
+      <thead><tr><th>Dates</th><th>Hotel</th><th>City</th></tr></thead>
+      <tbody>
+        <tr><td>6/13&ndash;6/15</td><td>Axel Guldsmeden</td><td>Copenhagen</td></tr>
+        <tr><td>6/15&ndash;6/17</td><td>The Manor</td><td>Amsterdam</td></tr>
+        <tr><td>6/17&ndash;6/19</td><td>The Anthony</td><td>Utrecht</td></tr>
+        <tr><td>6/19&ndash;6/20</td><td>Hyatt Place</td><td>Hoofddorp</td></tr>
+        <tr><td>6/20&ndash;6/21</td><td>Clarion</td><td>Kastrup</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- DAY 1 -->
+  <div class="day-section" data-day-section="1">
+    <div class="day-header">
+      <span>Day 1 &mdash; Fly<span class="day-progress hidden"></span></span>
+      <span class="day-date">Fri, June 12</span>
+    </div>
+    <div class="day-body">
+      <p>Travel day. Sleep on the plane.</p>
+      <div class="day-notes"><div class="notes-header" data-notes-day="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>Notes<span class="notes-badge hidden">!</span></div><textarea class="notes-input" data-notes="1" placeholder="Add notes for this day..."></textarea></div>
+    </div>
+  </div>
+
+  <!-- DAY 2 -->
+  <div class="day-section" data-day-section="2">
+    <div class="day-header">
+      <span>Day 2 &mdash; Copenhagen<span class="day-progress hidden"></span></span>
+      <span class="day-date">Sat, June 13</span>
+    </div>
+    <div class="day-body">
+      <div class="hotel-card">
+        <h3>Axel Guldsmeden</h3>
+        <div class="hotel-city">Copenhagen &middot; Check-in today</div>
+        <div class="hotel-detail"><span class="label">Dates</span><span class="value">Jun 13 &ndash; Jun 15</span></div>
+        <div class="hotel-detail"><span class="label">Room</span><span class="value">Side by Side &middot; 3 adults</span></div>
+        <div class="hotel-detail"><span class="label">Address</span><span class="value">Colbj&oslash;rnsengade 14, 1652 Copenhagen V</span></div>
+        <div class="hotel-detail"><span class="label">Phone</span><span class="value"><a href="tel:+4533313266">+45 33 31 32 66</a></span></div>
+        <div class="hotel-detail"><span class="label">Check-in</span><span class="value">15:00 / Check-out 12:00</span></div>
+        <div class="hotel-actions">
+          <a class="action-btn secondary" href="tel:+4533313266"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call</a>
+          <a class="action-btn secondary" href="https://maps.apple.com/?q=Colbj%C3%B8rnsengade+14%2C+1652+Copenhagen+V" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Map</a>
+        </div>
+      </div>
+
+      <p>You land around 7am. Metro from CPH airport into the city is ~15 min. Drop bags at Axel Guldsmeden in Vesterbro &mdash; they'll hold them until check-in (~3pm).</p>
+
+      <h4>Morning</h4>
+      <p>Walk or cab to <a class="place-link" href="https://maps.apple.com/?q=Hart+Bageri+Frederiksberg+Copenhagen" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Hart Bageri</a> in Frederiksberg for breakfast &mdash; widely considered the best bakery in Copenhagen. Get the cardamom bun (kardemommesnurrer) and a tebirke (poppy-seed pastry with marzipan).</p>
+      <p>Then walk to the <a class="place-link" href="https://maps.apple.com/?q=Botanical+Garden+Copenhagen" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Botanical Garden</a> + <a class="place-link" href="https://maps.apple.com/?q=Rosenborg+Castle+Copenhagen" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Rosenborg Castle</a> + The King's Garden cluster. Tour Rosenborg's interior; the crown jewels in the basement are worth it. Plan 2&ndash;3 hours total.</p>
+
+      <h4>Lunch</h4>
+      <p><a class="place-link" href="https://maps.apple.com/?q=Atelier+September+Copenhagen" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Atelier September</a> &mdash; Nordic open-faced sandwiches and salads, very vegetarian-friendly. Tiny but worth the wait.</p>
+      <p>Alternative: <a class="place-link" href="https://maps.apple.com/?q=Apollo+Bar+Charlottenborg+Copenhagen" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Apollo Bar at Charlottenborg</a> &mdash; modern Nordic with strong veg dishes.</p>
+
+      <h4>Afternoon</h4>
+      <p>Walk south through Str&oslash;get to <a class="place-link" href="https://maps.apple.com/?q=Nyhavn+Copenhagen" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Nyhavn</a>. Take the canal cruise from Nyhavn (1 hour, Hey Captain or Stromma). After the cruise, walk the Amalienborg &rarr; Frederik's Church &rarr; Kastellet sequence &mdash; about 90 minutes with stops.</p>
+
+      <h4>Evening</h4>
+      <p>Check in, shower, then <a class="place-link" href="https://maps.apple.com/?q=Tivoli+Gardens+Copenhagen" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Tivoli Gardens</a> for dinner and the evening. Restaurants: Gr&oslash;ften (classic Danish, veg sm&oslash;rrebr&oslash;d), Mazzoli's Pizzeria, or Sticks'n'Sushi (huge veg menu). The gardens get magical after dark.</p>
+      <div class="day-notes"><div class="notes-header" data-notes-day="2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>Notes<span class="notes-badge hidden">!</span></div><textarea class="notes-input" data-notes="2" placeholder="Add notes for this day..."></textarea></div>
+    </div>
+  </div>
+
+  <!-- DAY 3 -->
+  <div class="day-section" data-day-section="3">
+    <div class="day-header">
+      <span>Day 3 &mdash; Louisiana + Christianshavn<span class="day-progress hidden"></span></span>
+      <span class="day-date">Sun, June 14</span>
+    </div>
+    <div class="day-body">
+      <h4>Morning</h4>
+      <p>Quick bakery breakfast at <a class="place-link" href="https://maps.apple.com/?q=Andersen+%26+Maillard+N%C3%B8rrebro+Copenhagen" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Andersen &amp; Maillard</a> in N&oslash;rrebro (exceptional croissants). Train from K&oslash;benhavn H to Humleb&aelig;k on the Coast Line (~37 min, every 20 min). Aim for the 10:00 or 10:20 train &mdash; Louisiana opens at 11am Sunday.</p>
+
+      <h4>Late morning &ndash; afternoon</h4>
+      <p><a class="place-link" href="https://maps.apple.com/?q=Louisiana+Museum+of+Modern+Art+Humlebaek" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Louisiana Museum of Modern Art</a>. Plan ~3 hours. Don't rush the Giacometti gallery (long room of bronzes facing the sea). The sculpture park has Calders, Henry Moores, and a path down toward the water with views to Sweden.</p>
+
+      <h4>Lunch</h4>
+      <p>Eat at the Louisiana cafe. The buffet is genuinely good &mdash; Nordic salads, roasted vegetables, soups, breads. The view over the &Oslash;resund is the entire point.</p>
+
+      <h4>Afternoon</h4>
+      <p>Train back to Copenhagen (~3pm). Metro or walk to Christianshavn. Climb the <a class="place-link" href="https://maps.apple.com/?q=Church+of+Our+Saviour+Copenhagen" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Church of Our Saviour</a> (Vor Frelsers Kirke) &mdash; 400 steps, the last stretch is the external corkscrew on the spire. Then walk through <a class="place-link" href="https://maps.apple.com/?q=Freetown+Christiania+Copenhagen" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Freetown Christiania</a> (no photos in the marked sections).</p>
+
+      <h4>Evening</h4>
+      <p>Dinner at <a class="place-link" href="https://maps.apple.com/?q=Mother+K%C3%B8dbyen+Copenhagen" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Mother</a> in K&oslash;dbyen (Meatpacking District, walking distance from hotel) &mdash; Neapolitan pizza with serious veg options (the &ldquo;Bufalina&rdquo; is a classic). Alternative: Pony, upscale Nordic with a strong veg tasting menu.</p>
+      <div class="day-notes"><div class="notes-header" data-notes-day="3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>Notes<span class="notes-badge hidden">!</span></div><textarea class="notes-input" data-notes="3" placeholder="Add notes for this day..."></textarea></div>
+    </div>
+  </div>
+
+  <!-- DAY 4 -->
+  <div class="day-section" data-day-section="4">
+    <div class="day-header">
+      <span>Day 4 &mdash; CPH &rarr; Amsterdam<span class="day-progress hidden"></span></span>
+      <span class="day-date">Mon, June 15</span>
+    </div>
+    <div class="day-body">
+      <div class="hotel-card">
+        <h3>The Manor Amsterdam</h3>
+        <div class="hotel-city">Amsterdam &middot; Check-in today &middot; Check out of Axel Guldsmeden by 12:00</div>
+        <div class="hotel-detail"><span class="label">Dates</span><span class="value">Jun 15 (3 PM) &ndash; Jun 17 (12 PM)</span></div>
+        <div class="hotel-detail"><span class="label">Room</span><span class="value">Family Room &middot; 1 King + 1 Sofabed &middot; 3 adults</span></div>
+        <div class="hotel-detail"><span class="label">Address</span><span class="value">Linnaeusstraat 89, Amsterdam, 1093 EK</span></div>
+        <div class="hotel-actions">
+          <a class="action-btn secondary" href="https://maps.apple.com/?q=Linnaeusstraat+89%2C+Amsterdam%2C+1093+EK" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Map</a>
+        </div>
+      </div>
+
+      <h4>Morning</h4>
+      <p>Early breakfast &mdash; Hart, Andersen &amp; Maillard, or Sankt Peders. Otherwise grab pastries at the airport. 9&ndash;9:40 flight, arrive Amsterdam ~10:30&ndash;11:30.</p>
+      <p>Train Schiphol &rarr; Amsterdam Centraal (~15 min), then to The Manor in Oosterpark. Drop bags.</p>
+
+      <h4>Lunch</h4>
+      <p>Head to the Jordaan. Eat at <a class="place-link" href="https://maps.apple.com/?q=Winkel+43+Amsterdam" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Winkel 43</a> for the famous Dutch apple pie. Or <a class="place-link" href="https://maps.apple.com/?q=Vinnies+Deli+Haarlemmerstraat+Amsterdam" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Vinnies Deli</a> on Haarlemmerstraat for sit-down sandwich/salad lunch.</p>
+
+      <h4>Afternoon</h4>
+      <p>Walk <a class="place-link" href="https://maps.apple.com/?q=Antiekcentrum+Amsterdam+Elandsgracht" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Antiekcentrum Amsterdam</a> on Elandsgracht &mdash; the antique mall, easily an hour. Cross the street to Vintage of Amsterdam. Walk the <a class="place-link" href="https://maps.apple.com/?q=De+Negen+Straatjes+Amsterdam" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Nine Streets</a> (De 9 Straatjes) for boutique shopping. Brouwersgracht is the prettiest canal &mdash; locals will tell you this. Swing by the <a class="place-link" href="https://maps.apple.com/?q=Bloemenmarkt+Amsterdam" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Bloemenmarkt</a> (floating flower market, open until ~5:30pm).</p>
+      <div class="tip">Bakery break: Petit Gateau near Westerstraat has miniature pies that are absurd. Lekkerbrood is the cult sourdough bakery.</div>
+
+      <h4>Evening</h4>
+      <p>Dinner at <a class="place-link" href="https://maps.apple.com/?q=Hearth+Restaurant+Oosterpark+Amsterdam" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Hearth</a> (near hotel, exceptional plant-forward menu) or Cafe de Klepel (small bistro, vegetarian set menu). For casual: <a class="place-link" href="https://maps.apple.com/?q=Foodhallen+Amsterdam" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Foodhallen</a> indoor food court.</p>
+      <div class="day-notes"><div class="notes-header" data-notes-day="4"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>Notes<span class="notes-badge hidden">!</span></div><textarea class="notes-input" data-notes="4" placeholder="Add notes for this day..."></textarea></div>
+    </div>
+  </div>
+
+  <!-- DAY 5 -->
+  <div class="day-section" data-day-section="5">
+    <div class="day-header">
+      <span>Day 5 &mdash; Dunes + Amsterdam<span class="day-progress hidden"></span></span>
+      <span class="day-date">Tue, June 16</span>
+    </div>
+    <div class="day-body">
+      <h4>Early morning</h4>
+      <p>Bakery + coffee at <a class="place-link" href="https://maps.apple.com/?q=Bakers+%26+Roasters+Amsterdam" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Bakers &amp; Roasters</a> or pastry to-go from Lekkerbrood. Train Amsterdam Centraal &rarr; Overveen (~25 min via Haarlem).</p>
+
+      <h4>Morning</h4>
+      <p>Walk into <a class="place-link" href="https://maps.apple.com/?q=Zuid-Kennemerland+National+Park+Overveen" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Zuid-Kennemerland</a> from Overveen entrance, take the dunes route west to Bloemendaal aan Zee on the coast &mdash; ~6&ndash;7 km, 2 hours moderate pace. Heath, pine, dune ridges, ending at the North Sea. Bus 81 from Bloemendaal &rarr; Haarlem station &rarr; train back. Total ~4 hours including transit.</p>
+
+      <h4>Lunch</h4>
+      <p>Back by ~1:30pm. <a class="place-link" href="https://maps.apple.com/?q=Albert+Cuyp+Market+Amsterdam" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Albert Cuyp Market</a> in De Pijp &mdash; fresh stroopwafels off the iron, Surinamese roti (veg options available), Dutch cheese stalls. Open until 5pm. Sit-down alternative: Bataat in De Pijp (vegetarian/vegan).</p>
+
+      <h4>Afternoon</h4>
+      <p>Walk west from De Pijp to <a class="place-link" href="https://maps.apple.com/?q=Vondelpark+Amsterdam" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Vondelpark</a> (~15 min) and stroll through. From the north end, walk into the Museum Quarter for the iconic &ldquo;I amsterdam&rdquo; view, then loop through the canal belt. Optional: <a class="place-link" href="https://maps.apple.com/?q=Willet-Holthuysen+Museum+Amsterdam" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Willet-Holthuysen</a> (preserved 17th-century canal house, ~1 hour) or <a class="place-link" href="https://maps.apple.com/?q=Hortus+Botanicus+Amsterdam" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Hortus Botanicus</a> (open until 5pm).</p>
+
+      <h4>Evening</h4>
+      <p>Dinner at <a class="place-link" href="https://maps.apple.com/?q=The+Pantry+Amsterdam" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>The Pantry</a> (traditional Dutch, solid vegetarian stamppot and fondue) or Hearth. Casual option: <a class="place-link" href="https://maps.apple.com/?q=La+Perla+Jordaan+Amsterdam" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>La Perla</a> in Jordaan &mdash; best pizza in the city.</p>
+      <div class="day-notes"><div class="notes-header" data-notes-day="5"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>Notes<span class="notes-badge hidden">!</span></div><textarea class="notes-input" data-notes="5" placeholder="Add notes for this day..."></textarea></div>
+    </div>
+  </div>
+
+  <!-- DAY 6 -->
+  <div class="day-section" data-day-section="6">
+    <div class="day-header">
+      <span>Day 6 &mdash; Amsterdam &rarr; Utrecht<span class="day-progress hidden"></span></span>
+      <span class="day-date">Wed, June 17</span>
+    </div>
+    <div class="day-body">
+      <div class="hotel-card">
+        <h3>The Anthony</h3>
+        <div class="hotel-city">Utrecht &middot; Check-in today &middot; Check out of The Manor by 12:00</div>
+        <div class="hotel-detail"><span class="label">Dates</span><span class="value">Jun 17 &ndash; Jun 19</span></div>
+        <div class="hotel-detail"><span class="label">Room</span><span class="value">Triple Loft &middot; 3 guests</span></div>
+        <div class="hotel-detail"><span class="label">Address</span><span class="value">Kanaalstraat 197, Utrecht, 3531 CG</span></div>
+        <div class="hotel-detail"><span class="label">Phone</span><span class="value"><a href="tel:+31302272975">+31 30 227 2975</a></span></div>
+        <div class="hotel-detail"><span class="label">Check-in</span><span class="value">15:00 / Check-out 11:00 weekdays &middot; 12:00 weekends</span></div>
+        <div class="hotel-detail"><span class="label">Payment</span><span class="value">Card only (no cash). Valid ID required.</span></div>
+        <div class="hotel-detail"><span class="label">Transit</span><span class="value">~10 min walk from Utrecht Centraal</span></div>
+        <div class="hotel-actions">
+          <a class="action-btn secondary" href="tel:+31302272975"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call</a>
+          <a class="action-btn secondary" href="https://maps.apple.com/?q=Kanaalstraat+197%2C+Utrecht%2C+3531+CG" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Map</a>
+        </div>
+      </div>
+
+      <h4>Morning</h4>
+      <p>Check out. <a class="place-link" href="https://maps.apple.com/?q=Rijksmuseum+Amsterdam" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Rijksmuseum</a> opens at 9am &mdash; go first thing. 90 min to 2 hours focused on highlights: Vermeer's Milkmaid, Rembrandt's Night Watch, the dollhouses, and the Asian Pavilion.</p>
+
+      <h4>Late morning</h4>
+      <p>Train to Utrecht (~30 min, every 10 min from Centraal). Drop bags at The Anthony.</p>
+
+      <h4>Lunch</h4>
+      <p><a class="place-link" href="https://maps.apple.com/?q=Theo+Blom+Bakery+Utrecht" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Theo Blom</a> &mdash; one of the best bakeries in the country. Get a kruidkoek (Dutch spice cake) or appelflap. Or Hemel &amp; Aarde for sit-down vegetarian-friendly lunch.</p>
+
+      <h4>Afternoon</h4>
+      <p>Utrecht is best on foot along the <a class="place-link" href="https://maps.apple.com/?q=Oudegracht+Utrecht" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Oudegracht</a> &mdash; canal with two-level wharves where former cellars are now bars and cafes. Walk it end to end. Climb the <a class="place-link" href="https://maps.apple.com/?q=Dom+Tower+Utrecht" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Dom Tower</a> (book tour in advance &mdash; tallest church tower in NL, 465 steps). The Domkerk below is free.</p>
+
+      <h4>Evening</h4>
+      <p>Dinner at <a class="place-link" href="https://maps.apple.com/?q=Karaf+Utrecht" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Karaf</a> &mdash; natural wine and small plates, very vegetable-forward. Alternative: <a class="place-link" href="https://maps.apple.com/?q=Cafe+Olivier+Utrecht" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Cafe Olivier</a> in a converted hidden Catholic church.</p>
+      <div class="day-notes"><div class="notes-header" data-notes-day="6"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>Notes<span class="notes-badge hidden">!</span></div><textarea class="notes-input" data-notes="6" placeholder="Add notes for this day..."></textarea></div>
+    </div>
+  </div>
+
+  <!-- DAY 7 -->
+  <div class="day-section" data-day-section="7">
+    <div class="day-header">
+      <span>Day 7 &mdash; Utrecht + Castle<span class="day-progress hidden"></span></span>
+      <span class="day-date">Thu, June 18</span>
+    </div>
+    <div class="day-body">
+      <h4>Morning</h4>
+      <p>Bakery breakfast at Bakkerij Bond or <a class="place-link" href="https://maps.apple.com/?q=De+Kleinste+Bakker+Utrecht" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>De Kleinste Bakker</a> (the smallest bakery in Utrecht). Then <a class="place-link" href="https://maps.apple.com/?q=Rietveld+Schr%C3%B6der+House+Utrecht" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Rietveld Schr&ouml;der House</a> (UNESCO, book in advance, timed tours). Optional: <a class="place-link" href="https://maps.apple.com/?q=Museum+Speelklok+Utrecht" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Museum Speelklok</a> &mdash; mechanical music boxes and street organs.</p>
+
+      <h4>Lunch</h4>
+      <p>Sandwich-and-pastry lunch at Bakkerij Roodenburg or grab from a market stall. Quick &mdash; the afternoon is the big event.</p>
+
+      <h4>Afternoon &mdash; Castle</h4>
+      <p><a class="place-link" href="https://maps.apple.com/?q=Kasteel+de+Haar+Haarzuilens" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Kasteel de Haar</a> in Haarzuilens &mdash; largest castle in the Netherlands, restored by the Cuypers family. Bus 111 from Utrecht Centraal (~30 min). Allow 2.5&ndash;3 hours for interior tour + gardens. The gardens alone are worth the trip.</p>
+
+      <h4>Evening</h4>
+      <p>Back to Utrecht. <a class="place-link" href="https://maps.apple.com/?q=Restaurant+Anna+Utrecht" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Anna</a> (strong vegetarian menu), or Florin for something more substantial. Karaf holds up to a second visit.</p>
+      <div class="day-notes"><div class="notes-header" data-notes-day="7"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>Notes<span class="notes-badge hidden">!</span></div><textarea class="notes-input" data-notes="7" placeholder="Add notes for this day..."></textarea></div>
+    </div>
+  </div>
+
+  <!-- DAY 8 -->
+  <div class="day-section" data-day-section="8">
+    <div class="day-header">
+      <span>Day 8 &mdash; The Hague &rarr; Schiphol<span class="day-progress hidden"></span></span>
+      <span class="day-date">Fri, June 19</span>
+    </div>
+    <div class="day-body">
+      <div class="hotel-card">
+        <h3>Hyatt Place Amsterdam Airport</h3>
+        <div class="hotel-city">Hoofddorp &middot; Check-in this evening &middot; Check out of The Anthony by 11:00</div>
+        <div class="hotel-detail"><span class="label">Dates</span><span class="value">Jun 19 (3 PM) &ndash; Jun 20 (12 PM)</span></div>
+        <div class="hotel-detail"><span class="label">Room</span><span class="value">King Bed &middot; 3 adults &middot; cozy corner sofa, Wi-Fi</span></div>
+        <div class="hotel-detail"><span class="label">Address</span><span class="value">Rijnlanderweg 800, Hoofddorp, NL 2132 NN</span></div>
+        <div class="hotel-detail"><span class="label">Phone</span><span class="value"><a href="tel:+31205421234">+31 20 542 1234</a></span></div>
+        <div class="hotel-detail"><span class="label">Shuttle</span><span class="value">Schiphol stop A9&ndash;A13, every 30 min, 6:45 AM&ndash;11:15 PM</span></div>
+        <div class="hotel-actions">
+          <a class="action-btn secondary" href="tel:+31205421234"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call</a>
+          <a class="action-btn secondary" href="https://maps.apple.com/?q=Rijnlanderweg+800%2C+Hoofddorp%2C+2132+NN" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Map</a>
+        </div>
+      </div>
+
+      <h4>Morning</h4>
+      <p>Check out of The Anthony. Bags in lockers at Utrecht Centraal (or take to The Hague &mdash; Den Haag Centraal also has lockers). Train Utrecht &rarr; Den Haag Centraal (~40 min).</p>
+      <p>Walk to the <a class="place-link" href="https://maps.apple.com/?q=Mauritshuis+The+Hague" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Mauritshuis</a> (~10 min from station) &mdash; Vermeer's Girl with a Pearl Earring, Fabritius's Goldfinch, Rembrandt's Anatomy Lesson. 90 minutes. Stroll the <a class="place-link" href="https://maps.apple.com/?q=Binnenhof+The+Hague" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Binnenhof</a> next door.</p>
+
+      <h4>Lunch</h4>
+      <p>Anne&amp;Max on Denneweg (very vegetarian-friendly) or <a class="place-link" href="https://maps.apple.com/?q=Lola+Bikes+%26+Coffee+The+Hague" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Lola Bikes &amp; Coffee</a> for casual cafe lunch. Save room for pastries from Hartendief or De Banketbakker in the afternoon.</p>
+
+      <h4>Afternoon</h4>
+      <p><a class="place-link" href="https://maps.apple.com/?q=Escher+in+Het+Paleis+The+Hague" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Escher in Het Paleis</a> (former winter palace, Escher's tessellations and impossible architectures, 5-min walk from Mauritshuis). Then <a class="place-link" href="https://maps.apple.com/?q=Panorama+Mesdag+The+Hague" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Panorama Mesdag</a> &mdash; the giant 360&deg; painting from 1881, ~45 min.</p>
+      <p>Optional: Tram to <a class="place-link" href="https://maps.apple.com/?q=Scheveningen+Beach+The+Hague" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Scheveningen</a> beach for an hour on the pier and sand.</p>
+
+      <h4>Evening</h4>
+      <p>Train Den Haag &rarr; Schiphol (~35 min direct). Hyatt Place is at the airport. Dinner at the hotel or in Schiphol Plaza &mdash; there's a vegetarian-friendly La Place in the airport.</p>
+      <div class="day-notes"><div class="notes-header" data-notes-day="8"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>Notes<span class="notes-badge hidden">!</span></div><textarea class="notes-input" data-notes="8" placeholder="Add notes for this day..."></textarea></div>
+    </div>
+  </div>
+
+  <!-- DAY 9 -->
+  <div class="day-section" data-day-section="9">
+    <div class="day-header">
+      <span>Day 9 &mdash; CPH Bakery Day<span class="day-progress hidden"></span></span>
+      <span class="day-date">Sat, June 20</span>
+    </div>
+    <div class="day-body">
+      <div class="hotel-card">
+        <h3>Clarion Hotel Copenhagen Airport</h3>
+        <div class="hotel-city">Kastrup &middot; Check-in today &middot; Check out of Hyatt Place by 12:00</div>
+        <div class="hotel-detail"><span class="label">Dates</span><span class="value">Jun 20 &ndash; Jun 21</span></div>
+        <div class="hotel-detail"><span class="label">Guests</span><span class="value">3 adults</span></div>
+        <div class="hotel-detail"><span class="label">Address</span><span class="value">Ellehammersvej 20, 2770 Kastrup</span></div>
+        <div class="hotel-detail"><span class="label">Phone</span><span class="value"><a href="tel:+4532501501">+45 32 50 15 01</a></span></div>
+        <div class="hotel-detail"><span class="label">Check-in</span><span class="value">15:00 / Check-out 12:00</span></div>
+        <div class="hotel-actions">
+          <a class="action-btn secondary" href="tel:+4532501501"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call</a>
+          <a class="action-btn secondary" href="https://maps.apple.com/?q=Ellehammersvej+20%2C+2770+Kastrup" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Map</a>
+        </div>
+      </div>
+
+      <p>9&ndash;9:40 flight, arrive Copenhagen ~10:30&ndash;11:30. Drop bags at the Clarion (right at the airport).</p>
+
+      <h4>Bakery Crawl</h4>
+      <p>Train into the city. A reasonable circuit:</p>
+      <ul>
+        <li><a class="place-link" href="https://maps.apple.com/?q=Sankt+Peders+Bageri+Copenhagen" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Sankt Peders Bageri</a> &mdash; oldest bakery in Copenhagen (1652), full lineup of traditional Danish pastries on Saturdays</li>
+        <li><a class="place-link" href="https://maps.apple.com/?q=Andersen+%26+Maillard+N%C3%B8rrebro+Copenhagen" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Andersen &amp; Maillard</a> in N&oslash;rrebro &mdash; coffee and the croissant</li>
+        <li><a class="place-link" href="https://maps.apple.com/?q=Juno+the+Bakery+%C3%98sterbro+Copenhagen" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Juno the Bakery</a> in &Oslash;sterbro &mdash; the cardamom bun</li>
+        <li><a class="place-link" href="https://maps.apple.com/?q=Mirabelle+Bakery+N%C3%B8rrebro+Copenhagen" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Mirabelle</a> in N&oslash;rrebro &mdash; sourdough-focused, great savory rolls</li>
+      </ul>
+
+      <h4>Lunch</h4>
+      <p>Final sit-down: <a class="place-link" href="https://maps.apple.com/?q=Manfreds+N%C3%B8rrebro+Copenhagen" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Manfreds</a> in N&oslash;rrebro &mdash; natural wine, vegetable-forward, lots of veg dishes.</p>
+      <p>Also a chance to walk a neighborhood you missed &mdash; J&aelig;gersborggade is a great street in N&oslash;rrebro, or Refshaale&oslash;en (Reffen street food market, weekends only).</p>
+
+      <h4>Evening</h4>
+      <p>Train back to airport. Early dinner at the Clarion or in the area. Early bed.</p>
+      <div class="day-notes"><div class="notes-header" data-notes-day="9"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>Notes<span class="notes-badge hidden">!</span></div><textarea class="notes-input" data-notes="9" placeholder="Add notes for this day..."></textarea></div>
+    </div>
+  </div>
+
+  <!-- DAY 10 -->
+  <div class="day-section" data-day-section="10">
+    <div class="day-header">
+      <span>Day 10 &mdash; Fly Home<span class="day-progress hidden"></span></span>
+      <span class="day-date">Sun, June 21</span>
+    </div>
+    <div class="day-body">
+      <p>Check out of Clarion by 12:00 and head to the terminal.</p>
+      <div class="day-notes"><div class="notes-header" data-notes-day="10"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>Notes<span class="notes-badge hidden">!</span></div><textarea class="notes-input" data-notes="10" placeholder="Add notes for this day..."></textarea></div>
+    </div>
+  </div>
+
+</div><!-- /view-full -->
+
+
+<!-- ═══════════════════════════ -->
+<!-- VIEW: ESSENTIALS            -->
+<!-- ═══════════════════════════ -->
+<div id="view-essentials" class="hidden">
+  <div class="section-title">Essentials</div>
+
+  <div class="day-section" data-day-section="1">
+    <div class="day-header"><span>Day 1 &mdash; Fly<span class="day-progress hidden"></span></span><span class="day-date">Fri, June 12</span></div>
+    <div class="day-body"><ul class="essentials-list"><li>Travel day. Sleep on the plane.</li></ul></div>
+  </div>
+
+  <div class="day-section" data-day-section="2">
+    <div class="day-header"><span>Day 2 &mdash; Copenhagen<span class="day-progress hidden"></span></span><span class="day-date">Sat, June 13</span></div>
+    <div class="day-body"><ul class="essentials-list">
+      <li><span class="time-label">Check-in</span>Axel Guldsmeden &middot; <a href="tel:+4533313266">+45 33 31 32 66</a> &middot; <a href="https://maps.apple.com/?q=Colbj%C3%B8rnsengade+14%2C+1652+Copenhagen+V" target="_blank">Map</a></li>
+      <li><span class="time-label">Morning</span>Hart Bageri (breakfast) &rarr; Botanical Garden &rarr; Rosenborg Castle (crown jewels)</li>
+      <li><span class="time-label">Lunch</span>Atelier September (Nordic sandwiches)</li>
+      <li><span class="time-label">Afternoon</span>Nyhavn &rarr; Canal cruise (1 hr) &rarr; Amalienborg &rarr; Frederik's Church &rarr; Kastellet</li>
+      <li><span class="time-label">Evening</span>Tivoli Gardens for dinner (Gr&oslash;ften, Mazzoli's, or Sticks'n'Sushi)</li>
+    </ul></div>
+  </div>
+
+  <div class="day-section" data-day-section="3">
+    <div class="day-header"><span>Day 3 &mdash; Louisiana + Christianshavn<span class="day-progress hidden"></span></span><span class="day-date">Sun, June 14</span></div>
+    <div class="day-body"><ul class="essentials-list">
+      <li><span class="time-label">Morning</span>Andersen &amp; Maillard (breakfast) &rarr; Train to Humleb&aelig;k (~37 min, aim for 10:00/10:20)</li>
+      <li><span class="time-label">Late AM&ndash;PM</span>Louisiana Museum of Modern Art (~3 hrs) &middot; Lunch at museum cafe</li>
+      <li><span class="time-label">Afternoon</span>Train back ~3pm &rarr; Church of Our Saviour (400 steps) &rarr; Freetown Christiania</li>
+      <li><span class="time-label">Evening</span>Mother in K&oslash;dbyen (pizza, near hotel) or Pony (upscale Nordic)</li>
+    </ul></div>
+  </div>
+
+  <div class="day-section" data-day-section="4">
+    <div class="day-header"><span>Day 4 &mdash; CPH &rarr; Amsterdam<span class="day-progress hidden"></span></span><span class="day-date">Mon, June 15</span></div>
+    <div class="day-body"><ul class="essentials-list">
+      <li><span class="time-label">Check-out</span>Axel Guldsmeden by 12:00</li>
+      <li><span class="time-label">Flight</span>9&ndash;9:40 &rarr; AMS ~10:30&ndash;11:30 &rarr; Train to Amsterdam Centraal</li>
+      <li><span class="time-label">Check-in</span>The Manor &middot; <a href="https://maps.apple.com/?q=Linnaeusstraat+89%2C+Amsterdam%2C+1093+EK" target="_blank">Map</a></li>
+      <li><span class="time-label">Lunch</span>Winkel 43 (apple pie) or Vinnies Deli in Jordaan</li>
+      <li><span class="time-label">Afternoon</span>Antiekcentrum &rarr; Nine Streets &rarr; Brouwersgracht &rarr; Bloemenmarkt (until 5:30)</li>
+      <li><span class="time-label">Evening</span>Hearth (plant-forward, near hotel) or Foodhallen (casual food court)</li>
+    </ul></div>
+  </div>
+
+  <div class="day-section" data-day-section="5">
+    <div class="day-header"><span>Day 5 &mdash; Dunes + Amsterdam<span class="day-progress hidden"></span></span><span class="day-date">Tue, June 16</span></div>
+    <div class="day-body"><ul class="essentials-list">
+      <li><span class="time-label">Morning</span>Train to Overveen (~25 min) &rarr; Hike Zuid-Kennemerland to Bloemendaal (~2 hrs, 6&ndash;7 km) &rarr; Bus 81 back</li>
+      <li><span class="time-label">Lunch</span>Albert Cuyp Market in De Pijp (stroopwafels, roti, cheese)</li>
+      <li><span class="time-label">Afternoon</span>Vondelpark &rarr; Museum Quarter &rarr; Canal belt &middot; Optional: Willet-Holthuysen or Hortus Botanicus</li>
+      <li><span class="time-label">Evening</span>The Pantry (Dutch comfort food) or La Perla (best pizza, Jordaan)</li>
+    </ul></div>
+  </div>
+
+  <div class="day-section" data-day-section="6">
+    <div class="day-header"><span>Day 6 &mdash; Amsterdam &rarr; Utrecht<span class="day-progress hidden"></span></span><span class="day-date">Wed, June 17</span></div>
+    <div class="day-body"><ul class="essentials-list">
+      <li><span class="time-label">Check-out</span>The Manor by 12:00</li>
+      <li><span class="time-label">Morning</span>Rijksmuseum at 9am (Night Watch, Milkmaid, dollhouses)</li>
+      <li><span class="time-label">Transit</span>Train to Utrecht (~30 min)</li>
+      <li><span class="time-label">Check-in</span>The Anthony &middot; <a href="tel:+31302272975">+31 30 227 2975</a> &middot; <a href="https://maps.apple.com/?q=Kanaalstraat+197%2C+Utrecht%2C+3531+CG" target="_blank">Map</a> &middot; Card only, no cash</li>
+      <li><span class="time-label">Lunch</span>Theo Blom bakery (kruidkoek, appelflap)</li>
+      <li><span class="time-label">Afternoon</span>Oudegracht walk &rarr; Dom Tower (book in advance, 465 steps)</li>
+      <li><span class="time-label">Evening</span>Karaf (natural wine, small plates) or Cafe Olivier (converted church)</li>
+    </ul></div>
+  </div>
+
+  <div class="day-section" data-day-section="7">
+    <div class="day-header"><span>Day 7 &mdash; Utrecht + Castle<span class="day-progress hidden"></span></span><span class="day-date">Thu, June 18</span></div>
+    <div class="day-body"><ul class="essentials-list">
+      <li><span class="time-label">Morning</span>De Kleinste Bakker (breakfast) &rarr; Rietveld Schr&ouml;der House (book ahead) &middot; Optional: Museum Speelklok</li>
+      <li><span class="time-label">Afternoon</span>Kasteel de Haar &mdash; Bus 111 from Utrecht Centraal (~30 min) &middot; Allow 2.5&ndash;3 hrs for castle + gardens</li>
+      <li><span class="time-label">Evening</span>Anna (vegetarian menu) or Florin</li>
+    </ul></div>
+  </div>
+
+  <div class="day-section" data-day-section="8">
+    <div class="day-header"><span>Day 8 &mdash; The Hague &rarr; Schiphol<span class="day-progress hidden"></span></span><span class="day-date">Fri, June 19</span></div>
+    <div class="day-body"><ul class="essentials-list">
+      <li><span class="time-label">Check-out</span>The Anthony by 11:00 &middot; Bags in lockers at Utrecht Centraal</li>
+      <li><span class="time-label">Morning</span>Train to Den Haag (~40 min) &rarr; Mauritshuis (Girl with a Pearl Earring) &rarr; Binnenhof</li>
+      <li><span class="time-label">Lunch</span>Anne&amp;Max on Denneweg or Lola Bikes &amp; Coffee</li>
+      <li><span class="time-label">Afternoon</span>Escher in Het Paleis &rarr; Panorama Mesdag (360&deg; painting) &middot; Optional: Scheveningen beach</li>
+      <li><span class="time-label">Evening</span>Train Den Haag &rarr; Schiphol (~35 min)</li>
+      <li><span class="time-label">Check-in</span>Hyatt Place &middot; <a href="tel:+31205421234">+31 20 542 1234</a> &middot; <a href="https://maps.apple.com/?q=Rijnlanderweg+800%2C+Hoofddorp%2C+2132+NN" target="_blank">Map</a> &middot; Shuttle from Schiphol stop A9&ndash;A13 every 30 min</li>
+    </ul></div>
+  </div>
+
+  <div class="day-section" data-day-section="9">
+    <div class="day-header"><span>Day 9 &mdash; CPH Bakery Day<span class="day-progress hidden"></span></span><span class="day-date">Sat, June 20</span></div>
+    <div class="day-body"><ul class="essentials-list">
+      <li><span class="time-label">Check-out</span>Hyatt Place by 12:00</li>
+      <li><span class="time-label">Flight</span>9&ndash;9:40 &rarr; CPH ~10:30&ndash;11:30</li>
+      <li><span class="time-label">Check-in</span>Clarion CPH Airport &middot; <a href="tel:+4532501501">+45 32 50 15 01</a> &middot; <a href="https://maps.apple.com/?q=Ellehammersvej+20%2C+2770+Kastrup" target="_blank">Map</a></li>
+      <li><span class="time-label">Bakery Crawl</span>Sankt Peders Bageri &rarr; Andersen &amp; Maillard &rarr; Juno the Bakery &rarr; Mirabelle</li>
+      <li><span class="time-label">Lunch</span>Manfreds in N&oslash;rrebro (natural wine, vegetable-forward)</li>
+      <li><span class="time-label">Evening</span>Early dinner &amp; bed</li>
+    </ul></div>
+  </div>
+
+  <div class="day-section" data-day-section="10">
+    <div class="day-header"><span>Day 10 &mdash; Fly Home<span class="day-progress hidden"></span></span><span class="day-date">Sun, June 21</span></div>
+    <div class="day-body"><ul class="essentials-list"><li><span class="time-label">Check-out</span>Clarion by 12:00 &rarr; Terminal</li></ul></div>
+  </div>
+</div><!-- /view-essentials -->
+
+
+<!-- ═══════════════════════════ -->
+<!-- VIEW: HOTELS ONLY           -->
+<!-- ═══════════════════════════ -->
+<div id="view-hotels" class="hidden">
+  <div class="section-title">Hotels</div>
+
+  <div class="hotel-card">
+    <h3>1. Axel Guldsmeden</h3>
+    <div class="hotel-city">Copenhagen &middot; Sat Jun 13 &ndash; Mon Jun 15</div>
+    <div class="hotel-detail"><span class="label">Room</span><span class="value">Side by Side &middot; 3 adults</span></div>
+    <div class="hotel-detail"><span class="label">Address</span><span class="value">Colbj&oslash;rnsengade 14, 1652 Copenhagen V</span></div>
+    <div class="hotel-detail"><span class="label">Phone</span><span class="value"><a href="tel:+4533313266">+45 33 31 32 66</a></span></div>
+    <div class="hotel-detail"><span class="label">Check-in</span><span class="value">15:00 / Check-out 12:00</span></div>
+    <div class="hotel-actions">
+      <a class="action-btn secondary" href="tel:+4533313266"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call</a>
+      <a class="action-btn secondary" href="https://maps.apple.com/?q=Colbj%C3%B8rnsengade+14%2C+1652+Copenhagen+V" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Map</a>
+    </div>
+  </div>
+
+  <div class="hotel-card">
+    <h3>2. The Manor Amsterdam</h3>
+    <div class="hotel-city">Amsterdam &middot; Mon Jun 15 &ndash; Wed Jun 17</div>
+    <div class="hotel-detail"><span class="label">Room</span><span class="value">Family Room &middot; 1 King + 1 Sofabed &middot; 3 adults</span></div>
+    <div class="hotel-detail"><span class="label">Address</span><span class="value">Linnaeusstraat 89, Amsterdam, 1093 EK</span></div>
+    <div class="hotel-detail"><span class="label">Check-in</span><span class="value">15:00 / Check-out 12:00</span></div>
+    <div class="hotel-actions">
+      <a class="action-btn secondary" href="https://maps.apple.com/?q=Linnaeusstraat+89%2C+Amsterdam%2C+1093+EK" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Map</a>
+    </div>
+  </div>
+
+  <div class="hotel-card">
+    <h3>3. The Anthony</h3>
+    <div class="hotel-city">Utrecht &middot; Wed Jun 17 &ndash; Fri Jun 19</div>
+    <div class="hotel-detail"><span class="label">Room</span><span class="value">Triple Loft &middot; 3 guests</span></div>
+    <div class="hotel-detail"><span class="label">Address</span><span class="value">Kanaalstraat 197, Utrecht, 3531 CG</span></div>
+    <div class="hotel-detail"><span class="label">Phone</span><span class="value"><a href="tel:+31302272975">+31 30 227 2975</a></span></div>
+    <div class="hotel-detail"><span class="label">Check-in</span><span class="value">15:00 / Check-out 11:00 weekdays &middot; 12:00 weekends</span></div>
+    <div class="hotel-detail"><span class="label">Payment</span><span class="value">Card only. Valid ID required.</span></div>
+    <div class="hotel-actions">
+      <a class="action-btn secondary" href="tel:+31302272975"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call</a>
+      <a class="action-btn secondary" href="https://maps.apple.com/?q=Kanaalstraat+197%2C+Utrecht%2C+3531+CG" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Map</a>
+    </div>
+  </div>
+
+  <div class="hotel-card">
+    <h3>4. Hyatt Place Amsterdam Airport</h3>
+    <div class="hotel-city">Hoofddorp &middot; Fri Jun 19 &ndash; Sat Jun 20</div>
+    <div class="hotel-detail"><span class="label">Room</span><span class="value">King Bed &middot; 3 adults</span></div>
+    <div class="hotel-detail"><span class="label">Address</span><span class="value">Rijnlanderweg 800, Hoofddorp, NL 2132 NN</span></div>
+    <div class="hotel-detail"><span class="label">Phone</span><span class="value"><a href="tel:+31205421234">+31 20 542 1234</a></span></div>
+    <div class="hotel-detail"><span class="label">Shuttle</span><span class="value">Schiphol stop A9&ndash;A13, every 30 min, 6:45 AM&ndash;11:15 PM</span></div>
+    <div class="hotel-actions">
+      <a class="action-btn secondary" href="tel:+31205421234"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call</a>
+      <a class="action-btn secondary" href="https://maps.apple.com/?q=Rijnlanderweg+800%2C+Hoofddorp%2C+2132+NN" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Map</a>
+    </div>
+  </div>
+
+  <div class="hotel-card">
+    <h3>5. Clarion Hotel Copenhagen Airport</h3>
+    <div class="hotel-city">Kastrup &middot; Sat Jun 20 &ndash; Sun Jun 21</div>
+    <div class="hotel-detail"><span class="label">Guests</span><span class="value">3 adults</span></div>
+    <div class="hotel-detail"><span class="label">Address</span><span class="value">Ellehammersvej 20, 2770 Kastrup</span></div>
+    <div class="hotel-detail"><span class="label">Phone</span><span class="value"><a href="tel:+4532501501">+45 32 50 15 01</a></span></div>
+    <div class="hotel-detail"><span class="label">Check-in</span><span class="value">15:00 / Check-out 12:00</span></div>
+    <div class="hotel-actions">
+      <a class="action-btn secondary" href="tel:+4532501501"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>Call</a>
+      <a class="action-btn secondary" href="https://maps.apple.com/?q=Ellehammersvej+20%2C+2770+Kastrup" target="_blank"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>Map</a>
+    </div>
+  </div>
+</div><!-- /view-hotels -->
+
+
+<!-- ═══════════════════════════ -->
+<!-- VIEW: BY DAY (built by JS)  -->
+<!-- ═══════════════════════════ -->
+<div id="view-byday" class="hidden"></div>
+
+</div><!-- /content -->
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- ══════ JAVASCRIPT ══════ -->
+<script>
+(function() {
+  const KEY = 'europe-trip-2026-v2';
+  const views = {
+    full: document.getElementById('view-full'),
+    essentials: document.getElementById('view-essentials'),
+    hotels: document.getElementById('view-hotels'),
+    byday: document.getElementById('view-byday'),
+  };
+  const daySelector = document.getElementById('daySelector');
+  const viewTabs = document.querySelectorAll('.view-tab');
+  const dayPills = document.querySelectorAll('.day-pill');
+  const dayDetailBtns = document.querySelectorAll('.day-detail-btn');
+  const editToggle = document.getElementById('editToggle');
+  const resetBtn = document.getElementById('resetBtn');
+  const toastEl = document.getElementById('toast');
+
+  let currentView = 'full';
+  let currentDay = '1';
+  let currentDayDetail = 'full';
+  let editMode = false;
+  let state = { crossed: {}, edits: {}, notes: {} };
+
+  // ── State persistence ──
+  function loadState() {
+    try { state = JSON.parse(localStorage.getItem(KEY)) || { crossed: {}, edits: {}, notes: {} }; }
+    catch(e) { state = { crossed: {}, edits: {}, notes: {} }; }
+    if (!state.crossed) state.crossed = {};
+    if (!state.edits) state.edits = {};
+    if (!state.notes) state.notes = {};
+  }
+  function saveState() { localStorage.setItem(KEY, JSON.stringify(state)); }
+
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    setTimeout(() => toastEl.classList.remove('show'), 1800);
+  }
+
+  // ── Cross-off system ──
+  function initCrossOff(root) {
+    // For full view: make h4 elements crossable
+    root.querySelectorAll('.day-body').forEach(body => {
+      const section = body.closest('[data-day-section]');
+      if (!section) return;
+      const day = section.getAttribute('data-day-section');
+      const viewId = body.closest('#view-full') ? 'f' : body.closest('#view-essentials') ? 'e' : 'b';
+
+      if (viewId === 'e' || body.closest('#view-essentials')) {
+        // Essentials: each li is crossable
+        body.querySelectorAll('.essentials-list > li').forEach((li, idx) => {
+          const xid = `e-d${day}-${idx}`;
+          makeCrossable(li, xid);
+        });
+      } else {
+        // Full view: each h4 is crossable
+        let idx = 0;
+        body.querySelectorAll(':scope > h4').forEach(h4 => {
+          const xid = `f-d${day}-${idx++}`;
+          makeCrossable(h4, xid);
+        });
+      }
+    });
+  }
+
+  function makeCrossable(el, xid) {
+    if (el.classList.contains('crossable')) return;
+    el.setAttribute('data-xid', xid);
+    el.classList.add('crossable');
+    const check = document.createElement('span');
+    check.className = 'cross-check';
+    check.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      toggleCross(xid);
+    });
+    el.prepend(check);
+    if (state.crossed[xid]) el.classList.add('done');
+  }
+
+  function toggleCross(xid) {
+    state.crossed[xid] = !state.crossed[xid];
+    if (!state.crossed[xid]) delete state.crossed[xid];
+    saveState();
+    // Update all matching elements across all views
+    document.querySelectorAll(`[data-xid="${xid}"]`).forEach(el => {
+      el.classList.toggle('done', !!state.crossed[xid]);
+    });
+    updateProgress();
+  }
+
+  // ── Progress badges ──
+  function updateProgress() {
+    document.querySelectorAll('[data-day-section]').forEach(section => {
+      const crossables = section.querySelectorAll('.crossable');
+      if (crossables.length === 0) return;
+      const done = section.querySelectorAll('.crossable.done').length;
+      const badge = section.querySelector('.day-progress');
+      if (!badge) return;
+      if (done > 0) {
+        badge.textContent = `${done}/${crossables.length}`;
+        badge.classList.remove('hidden');
+        badge.classList.toggle('all-done', done === crossables.length);
+      } else {
+        badge.classList.add('hidden');
+      }
+    });
+  }
+
+  // ── Edit mode ──
+  function setEditMode(on) {
+    editMode = on;
+    document.body.classList.toggle('edit-mode', on);
+    editToggle.classList.toggle('active', on);
+
+    document.querySelectorAll('.day-body p, .day-body li:not(.crossable .essentials-list li), .day-body .tip').forEach(el => {
+      if (el.closest('.hotel-card') || el.closest('.day-notes')) return;
+      if (on) {
+        el.setAttribute('contenteditable', 'true');
+        el.addEventListener('blur', handleEditBlur);
+      } else {
+        el.removeAttribute('contenteditable');
+        el.removeEventListener('blur', handleEditBlur);
+      }
+    });
+
+    // Also handle essentials list items
+    document.querySelectorAll('.essentials-list > li').forEach(el => {
+      if (on) {
+        el.setAttribute('contenteditable', 'true');
+        el.addEventListener('blur', handleEditBlur);
+      } else {
+        el.removeAttribute('contenteditable');
+        el.removeEventListener('blur', handleEditBlur);
+      }
+    });
+
+    if (on) toast('Edit mode on — tap text to edit');
+    else toast('Edit mode off — changes saved');
+  }
+
+  function handleEditBlur(e) {
+    const el = e.target;
+    const xid = el.getAttribute('data-xid');
+    const eid = el.getAttribute('data-eid');
+    const key = xid || eid;
+    if (!key) {
+      // Assign an eid if missing
+      const body = el.closest('.day-body');
+      const section = el.closest('[data-day-section]');
+      if (!section) return;
+      const day = section.getAttribute('data-day-section');
+      const view = el.closest('#view-full') ? 'f' : 'e';
+      const siblings = body.querySelectorAll(view === 'f' ? ':scope > p, :scope > h4, :scope > ul > li, :scope > .tip' : '.essentials-list > li');
+      let idx = Array.from(siblings).indexOf(el);
+      const newEid = `edit-${view}-d${day}-${idx}`;
+      el.setAttribute('data-eid', newEid);
+      state.edits[newEid] = el.innerHTML;
+    } else {
+      state.edits[key] = el.innerHTML;
+    }
+    saveState();
+  }
+
+  function restoreEdits(root) {
+    Object.keys(state.edits).forEach(key => {
+      root.querySelectorAll(`[data-xid="${key}"], [data-eid="${key}"]`).forEach(el => {
+        el.innerHTML = state.edits[key];
+        // Re-prepend cross-check if it's crossable and lost its check
+        if (el.classList.contains('crossable') && !el.querySelector('.cross-check')) {
+          const check = document.createElement('span');
+          check.className = 'cross-check';
+          check.addEventListener('click', function(e) {
+            e.preventDefault(); e.stopPropagation();
+            toggleCross(el.getAttribute('data-xid'));
+          });
+          el.prepend(check);
+        }
+      });
+    });
+  }
+
+  // ── Notes ──
+  function initNotes() {
+    document.querySelectorAll('.notes-header').forEach(header => {
+      const day = header.getAttribute('data-notes-day');
+      const badge = header.querySelector('.notes-badge');
+      const textarea = header.nextElementSibling;
+
+      // Restore
+      if (state.notes[day]) {
+        textarea.value = state.notes[day];
+        header.classList.add('open');
+        if (badge) badge.classList.remove('hidden');
+      }
+
+      header.addEventListener('click', () => {
+        header.classList.toggle('open');
+      });
+
+      textarea.addEventListener('input', () => {
+        state.notes[day] = textarea.value;
+        saveState();
+        if (badge) badge.classList.toggle('hidden', !textarea.value.trim());
+      });
+    });
+  }
+
+  // ── By-day view ──
+  function buildByDayView() {
+    const byday = views.byday;
+    byday.innerHTML = '';
+    for (let d = 1; d <= 10; d++) {
+      ['full', 'essentials'].forEach(src => {
+        const sourceView = src === 'full' ? views.full : views.essentials;
+        const section = sourceView.querySelector(`[data-day-section="${d}"]`);
+        if (section) {
+          const clone = section.cloneNode(true);
+          clone.setAttribute('data-byday', d);
+          clone.setAttribute('data-byday-detail', src);
+          clone.classList.add('hidden');
+          byday.appendChild(clone);
+        }
+      });
+    }
+    initCrossOff(byday);
+    restoreEdits(byday);
+    // Re-init notes in cloned nodes
+    byday.querySelectorAll('.notes-header').forEach(header => {
+      const day = header.getAttribute('data-notes-day');
+      const badge = header.querySelector('.notes-badge');
+      const textarea = header.nextElementSibling;
+      if (state.notes[day]) {
+        textarea.value = state.notes[day];
+        header.classList.add('open');
+        if (badge) badge.classList.remove('hidden');
+      }
+      header.addEventListener('click', () => header.classList.toggle('open'));
+      textarea.addEventListener('input', () => {
+        state.notes[day] = textarea.value;
+        saveState();
+        if (badge) badge.classList.toggle('hidden', !textarea.value.trim());
+        // Sync to other notes with same day
+        document.querySelectorAll(`textarea[data-notes="${day}"]`).forEach(ta => {
+          if (ta !== textarea) ta.value = textarea.value;
+        });
+      });
+    });
+  }
+
+  function setView(view) {
+    currentView = view;
+    viewTabs.forEach(t => t.classList.toggle('active', t.dataset.view === view));
+    Object.entries(views).forEach(([k, el]) => el.classList.toggle('hidden', k !== view));
+    daySelector.classList.toggle('visible', view === 'byday');
+    if (view === 'byday') {
+      buildByDayView();
+      updateByDay();
+    }
+    updateProgress();
+    window.scrollTo({ top: 0 });
+  }
+
+  function updateByDay() {
+    views.byday.querySelectorAll('[data-byday]').forEach(s => {
+      const isDay = s.getAttribute('data-byday') === currentDay;
+      const isDetail = s.getAttribute('data-byday-detail') === currentDayDetail;
+      s.classList.toggle('hidden', !(isDay && isDetail));
+    });
+    dayPills.forEach(p => p.classList.toggle('active', p.dataset.day === currentDay));
+    dayDetailBtns.forEach(b => b.classList.toggle('active', b.dataset.detail === currentDayDetail));
+  }
+
+  // ── Event listeners ──
+  viewTabs.forEach(tab => tab.addEventListener('click', () => setView(tab.dataset.view)));
+  dayPills.forEach(pill => pill.addEventListener('click', () => { currentDay = pill.dataset.day; updateByDay(); }));
+  dayDetailBtns.forEach(btn => btn.addEventListener('click', () => { currentDayDetail = btn.dataset.detail; updateByDay(); }));
+
+  editToggle.addEventListener('click', () => setEditMode(!editMode));
+
+  resetBtn.addEventListener('click', () => {
+    if (confirm('Clear all cross-offs, edits, and notes? This cannot be undone.')) {
+      localStorage.removeItem(KEY);
+      location.reload();
+    }
+  });
+
+  function updateStickyPositions() {
+    daySelector.style.top = document.getElementById('ribbon').offsetHeight + 'px';
+  }
+
+  // ── Init ──
+  loadState();
+  initCrossOff(views.full);
+  initCrossOff(views.essentials);
+  restoreEdits(views.full);
+  restoreEdits(views.essentials);
+  initNotes();
+  updateProgress();
+  updateStickyPositions();
+  window.addEventListener('resize', updateStickyPositions);
+})();
+</script>
+</body>
+</html>
